@@ -24,8 +24,8 @@ function performDailyCommit(): void {
   const today = getFormattedDate();
   const timestamp = new Date().toISOString();
   
-  console.log(`🚀 Starting daily commit for ${today}...`);
-  console.log(`📅 Timestamp: ${timestamp}`);
+  console.log(`Starting daily commit for ${today}...`);
+  console.log(`Timestamp: ${timestamp}`);
 
   try {
     const heartbeatContent = `[${timestamp}] Daily heartbeat - ${today}\n`;
@@ -36,24 +36,24 @@ function performDailyCommit(): void {
       
       // Check if already committed today
       if (existingContent.includes(today)) {
-        console.log('✅ Already committed today, skipping...');
+        console.log('Already committed today, skipping...');
         return;
       }
       
       // Log rotation: clear file if too many entries
       const lineCount = existingContent.split('\n').filter(line => line.trim()).length;
       if (lineCount >= MAX_LOG_LINES) {
-        console.log(`🔄 Rotating log file (${lineCount} entries, max: ${MAX_LOG_LINES})`);
+        console.log(`Rotating log file (${lineCount} entries, max: ${MAX_LOG_LINES})`);
         // Keep only last entry as "checkpoint" with timestamp
         const lastEntry = existingContent.split('\n').filter(line => line.trim()).pop();
         writeFileSync(HEARTBEAT_FILE, lastEntry ? lastEntry + '\n' : '');
-        console.log('📦 Log file rotated - history reset');
+        console.log('Log file rotated - history reset');
       }
     }
     
     // Append new entry
     appendFileSync(HEARTBEAT_FILE, heartbeatContent);
-    console.log(`📝 Updated ${HEARTBEAT_FILE}`);
+    console.log(`Updated ${HEARTBEAT_FILE}`);
     
     // Configure git user (required for commits in CI/CD)
     execSync('git config user.name "GitHub Actions"', { encoding: 'utf-8' });
@@ -61,27 +61,27 @@ function performDailyCommit(): void {
     
     // Stage the changes
     execSync(`git add ${HEARTBEAT_FILE}`, { encoding: 'utf-8' });
-    console.log('📦 Staged changes');
+    console.log('Staged changes');
     
     // Create commit
     execSync(`git commit -m "chore: daily heartbeat ${today}"`, { encoding: 'utf-8' });
-    console.log('✅ Committed changes');
+    console.log('Committed changes');
     
     // Push to remote
     execSync('git push', { encoding: 'utf-8' });
-    console.log('🚀 Pushed to remote');
+    console.log('Pushed to remote');
     
-    console.log(`✨ Daily commit completed successfully!`);
+    console.log(`Daily commit completed successfully!`);
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error(`❌ Error during daily commit: ${errorMessage}`);
+    console.error(`Error during daily commit: ${errorMessage}`);
     process.exit(1);
   }
 }
 
 // Main execution
-console.log('🔧 Daily Commit Tool initialized');
-console.log('⏰ Using cronbake scheduler');
+console.log('Daily Commit Tool initialized');
+console.log('Using cronbake scheduler');
 
 // For GitHub Actions, we run immediately
 // For local execution, we schedule daily at 6 AM
@@ -93,12 +93,12 @@ const dailyJob = baker.add({
   callback: performDailyCommit,
 });
 
-console.log(`📅 Scheduled daily commit at 6:00 AM`);
+console.log(`Scheduled daily commit at 6:00 AM`);
 
 // Run immediately once
-console.log('▶️ Running initial commit...');
+console.log('Running initial commit...');
 performDailyCommit();
 
 // Start the scheduler
 baker.bakeAll();
-console.log('🟢 Scheduler started. Tool is now running.');
+console.log('Scheduler started. Tool is now running.');

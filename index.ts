@@ -1,9 +1,10 @@
 import Baker from 'cronbake';
 import { execSync } from 'child_process';
-import { readFileSync, appendFileSync, existsSync } from 'fs';
+import { readFileSync, appendFileSync, writeFileSync, existsSync } from 'fs';
 
 const DATE_FORMAT = 'yyyy-MM-dd';
 const HEARTBEAT_FILE = '.keepalive';
+const MAX_LOG_LINES = 100; // Rotate after 100 entries (~3 months)
 
 /**
  * Get formatted date string
@@ -27,18 +28,30 @@ function performDailyCommit(): void {
   console.log(`📅 Timestamp: ${timestamp}`);
 
   try {
-    // Create or update heartbeat file
     const heartbeatContent = `[${timestamp}] Daily heartbeat - ${today}\n`;
     
+    // Check if file exists and has content
     if (existsSync(HEARTBEAT_FILE)) {
       const existingContent = readFileSync(HEARTBEAT_FILE, 'utf-8');
+      
       // Check if already committed today
       if (existingContent.includes(today)) {
         console.log('✅ Already committed today, skipping...');
         return;
       }
+      
+      // Log rotation: clear file if too many entries
+      const lineCount = existingContent.split('\n').filter(line => line.trim()).length;
+      if (lineCount >= MAX_LOG_LINES) {
+        console.log(`🔄 Rotating log file (${lineCount} entries, max: ${MAX_LOG_LINES})`);
+        // Keep only last entry as "checkpoint" with timestamp
+        const lastEntry = existingContent.split('\n').filter(line => line.trim()).pop();
+        writeFileSync(HEARTBEAT_FILE, lastEntry ? lastEntry + '\n' : '');
+        console.log('📦 Log file rotated - history reset');
+      }
     }
     
+    // Append new entry
     appendFileSync(HEARTBEAT_FILE, heartbeatContent);
     console.log(`📝 Updated ${HEARTBEAT_FILE}`);
     

@@ -1,120 +1,64 @@
 # daily-commit
 
-Auto-commit tool for maintaining GitHub commit streaks using **Bun.js** + **GitHub Actions** + **cronbake**.
+Automated daily commit tool for maintaining GitHub contribution streaks.
 
-## ✨ Features
+## Overview
 
-- 🚀 **Automated Daily Commits**: Automatically commits to your repository every day
-- ⏰ **Scheduled Execution**: Runs at 6:00 AM UTC daily via GitHub Actions
-- 🔧 **Bun.js Powered**: Uses Bun runtime for fast execution
-- 📅 **Heartbeat Tracking**: Maintains `.keepalive` file with timestamps
-- 🔄 **Git Integration**: Handles git add, commit, and push automatically
-- 🛡️ **Idempotent**: Won't create duplicate commits on the same day
+This tool automatically creates a commit to your repository every day at 6:00 AM UTC, keeping your GitHub contribution streak active without manual effort.
 
-## 🏗️ Architecture
+## Features
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    GitHub Actions                           │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │  1. Checkout code                                   │   │
-│  │  2. Setup Bun (oven-sh/setup-bun@v2)               │   │
-│  │  3. bun install                                    │   │
-│  │  4. bun run index.ts (cronbake scheduler)          │   │
-│  └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
-```
+- Automated daily commits via GitHub Actions
+- Bun.js runtime for fast execution
+- Heartbeat tracking with log rotation to prevent file growth
+- Idempotent execution (prevents duplicate commits)
+- Manual trigger support
 
-## 📁 Project Structure
+## Quick Start
 
-```
-daily-commit/
-├── .github/
-│   └── workflows/
-│       └── daily-commit.yml     # GitHub Actions workflow
-├── .keepalive                   # Heartbeat file (auto-generated)
-├── index.ts                     # Main script with cronbake scheduler
-├── package.json                 # Dependencies (cronbake)
-├── bun.lock                     # Bun lock file
-└── tsconfig.json               # TypeScript configuration
+```bash
+# Clone the repository
+git clone https://github.com/HuynhSang2005/daily-commit.git
+cd daily-commit
+
+# Install dependencies
+bun install
+
+# Run locally
+bun run index.ts
 ```
 
-## 🚀 Getting Started
+## Configuration
 
-### Prerequisites
+### Schedule
 
-- [Bun](https://bun.sh) installed
-- GitHub account
-- Git repository
-
-### Installation
-
-1. **Clone or create this repository**
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/daily-commit.git
-   cd daily-commit
-   ```
-
-2. **Install dependencies**
-   ```bash
-   bun install
-   ```
-
-3. **Test locally**
-   ```bash
-   bun run index.ts
-   ```
-
-4. **Push to GitHub**
-   ```bash
-   git add .
-   git commit -m "feat: initial setup"
-   git push
-   ```
-
-## ⚙️ Configuration
-
-### GitHub Actions Schedule
-
-Edit `.github/workflows/daily-commit.yml` to change the schedule:
+Edit `.github/workflows/daily-commit.yml`:
 
 ```yaml
 schedule:
-  - cron: "0 6 * * *"  # Every day at 6:00 AM UTC
+  - cron: "0 6 * * *"  # Daily at 6:00 AM UTC
 ```
 
-**Cron format** (6 fields for cronbake):
-```
-second minute hour day month day-of-week
-0 0 6 * * * = 6:00 AM every day
-```
+### Local Schedule
 
-### Local Execution Time
-
-Edit `index.ts` to change the scheduler:
+Edit `index.ts`:
 
 ```typescript
 const dailyJob = baker.add({
   name: 'daily-commit',
-  cron: '0 0 8 * * *', // Change to 8:00 AM
+  cron: '0 0 8 * * *', // Change to your preferred time
   callback: performDailyCommit,
 });
 ```
 
-## 📖 Usage
+## Commands
 
-### Manual Trigger (Local)
+| Command | Description |
+|---------|-------------|
+| `bun install` | Install dependencies |
+| `bun run index.ts` | Run the daily commit script |
 
-```bash
-bun run index.ts
-```
-
-### Manual Trigger (GitHub Actions)
-
-1. Go to your repository on GitHub
-2. Navigate to **Actions** tab
-3. Select **Daily Commit** workflow
-4. Click **Run workflow**
+## Usage
 
 ### View Heartbeat Log
 
@@ -122,36 +66,28 @@ bun run index.ts
 cat .keepalive
 ```
 
-### Check Commit History
+### Manual Trigger (GitHub Actions)
 
-```bash
-git log --oneline
+1. Go to **Actions** tab
+2. Select **Daily Commit** workflow
+3. Click **Run workflow**
+
+## Project Structure
+
+```
+daily-commit/
+├── .github/
+│   └── workflows/
+│       └── daily-commit.yml     # GitHub Actions workflow
+├── .keepalive                   # Heartbeat file (auto-generated)
+├── index.ts                     # Main script with scheduler
+├── package.json                 # Dependencies
+├── bun.lock                     # Bun lock file
+└── tsconfig.json               # TypeScript configuration
 ```
 
-## 🛠️ Technologies
+## Technologies
 
-- **Runtime**: [Bun.js](https://bun.sh) v1.3.5+
-- **Scheduler**: [cronbake](https://github.com/chaqchase/cronbake) v0.4.0+
-- **CI/CD**: [GitHub Actions](https://github.com/features/actions)
-- **Language**: TypeScript
-
-## 📝 Scripts
-
-| Command | Description |
-|---------|-------------|
-| `bun install` | Install dependencies |
-| `bun run index.ts` | Run the daily commit script |
-| `bun run build` | Build the project (if configured) |
-
-## 🤝 Contributing
-
-Feel free to open issues or submit pull requests!
-
-## 📄 License
-
-MIT License
-
-## 🙏 Acknowledgments
-
-- [cronbake](https://github.com/chaqchase/cronbake) - Powerful cron job manager for Bun
-- [setup-bun](https://github.com/oven-sh/setup-bun) - Official GitHub Action for Bun
+- [Bun.js](https://bun.sh) - JavaScript runtime
+- [cronbake](https://github.com/chaqchase/cronbake) - Cron scheduler for Bun
+- [GitHub Actions](https://github.com/features/actions) - CI/CD

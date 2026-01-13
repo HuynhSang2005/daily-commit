@@ -1,0 +1,32 @@
+name: Daily Commit
+
+on:
+  schedule:
+    # Run every day at 6:00 AM UTC
+    # Cron format: minute hour day-of-month month day-of-week
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+    # Allow manual triggering
+
+permissions:
+  contents: write
+
+jobs:
+  daily-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run daily commit script
+        run: bun run index.ts

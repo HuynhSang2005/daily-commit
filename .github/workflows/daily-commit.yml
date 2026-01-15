@@ -2,9 +2,8 @@ name: Daily Commit
 
 on:
   schedule:
-    # Run every day at 6:00 AM UTC
-    # Cron format: minute hour day-of-month month day-of-week
-    - cron: "0 6 * * *"
+    # Run every day at 6:30 AM UTC (avoid peak load at :00)
+    - cron: "30 6 * * *"
   workflow_dispatch:
     # Allow manual triggering
 

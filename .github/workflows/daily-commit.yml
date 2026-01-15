@@ -2,8 +2,9 @@ name: Daily Commit
 
 on:
   schedule:
-    # Run every day at 6:30 AM UTC (avoid peak load at :00)
-    - cron: "30 6 * * *"
+    # Run every day at 1:00 AM Vietnam time (UTC+7)
+    # 1 AM Vietnam = 6 PM UTC = 18:00 UTC
+    - cron: "0 18 * * *"
   workflow_dispatch:
     # Allow manual triggering
 
